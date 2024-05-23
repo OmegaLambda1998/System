@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+declare -A links=(
+    ["$ZDOTDIR"]="config/zsh"
+)
+
+function mklinks {
+    for src in "${!links[@]}"; do
+        mnt="$script_dir/${links[$src]}"
+        if [ ! -d "$mnt" ]; then
+            mkdir "$mnt"
+        fi
+        echo "Local mounting $scr -> $mnt"
+        lmount "$src" "$mnt"
+    done
+}
+
+function rmlinks {
+    for mnt in "${links[@]}"; do
+        mnt="$script_dir/$mnt"
+        echo "Unmounting $mnt"
+        umount "$mnt"
+        rmdir "$mnt"
+    done
+}
+
+if [ "$1" == "up" ]; then
+    mklinks
+fi
+
+if [ "$1" == "down" ]; then
+    rmlinks
+fi
