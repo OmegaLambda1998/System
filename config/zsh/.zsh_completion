@@ -1,0 +1,33 @@
+# Load compinit function
+autoload -U compinit; compinit
+
+# Include hidden files in completion
+_comp_options+=(globdots)
+
+# Cache completions
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
+zstyle ':completion:*' rehash true
+
+# Replace zsh default tab with fzf
+source $ZDOTDIR/plugins/fzf-tab/fzf-tab.plugin.zsh
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+# NOTE: don't use escape sequences here, fzf-tab will ignore them
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
+zstyle ':completion:*' menu no
+
+# fzf previews
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'tree -C $realpath | head -200'
+zstyle ':fzf-tab:complete:ls:*' fzf-preview 'if [ -f $realpath ]; then cat $realpath; else tree -C $realpath; fi | head -200'
+
+# Show systemd unit status
+zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
+
+# Environment variables
+zstyle ':fzf-tab:complete:(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' \
+	fzf-preview 'echo ${(P)word}'

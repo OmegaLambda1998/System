@@ -1,0 +1,134 @@
+# Check for aliases after doas
+alias doas="doas "
+
+# Colored output
+alias ls="ls --color=auto"
+
+# Default ls arguments
+# -A: list all except . and ..
+# --group-directories-first: self explanatory 
+# -h: Print sizes in human readable format
+# -H: Follow symlinks
+# -l: Long listing format
+# -s: Print file size
+alias l="ls -A --group-directories-first -h -H -l -s"
+
+# Default rg (quicker grep) arguments
+# -S: Smart case - only case sensitive is uppercase in pattern
+# -L: Follow symlinks
+# -.: Search hidden files and directories
+# --one-file-system: Do not cross file system boundaries when searching
+alias rg="rg -S -L --one-file-system -. --ignore-file=$CONFIG/rg/ignore"
+
+# Default fd arguments
+# -H: Include hidden files
+# -l: Long listing format (like ls -l)
+# --one-file-system: Do not cross file system boundaries when searching
+alias fd="fd -H -l --one-file-system"
+
+# Default rm arguments
+# safe-rm is loaded in $PATH before rm, so `which rm` -> `/usr/lib/safe-rm/rm`
+# safe-rm accepts the same args as rm
+# -I: Prompt once before removing more than 3 files, or recursively
+# --one-file-system: Ignore recursive directories in different file systems
+# --preserve-root=all: Do not remove '/'. With 'all' do not remove anything on a seperate device from its parent
+# -d: Allow rm to remove empty directories
+# -v: Explain what is being done
+alias rm="rm -I --one-file-system --preserve-root=all -d -v"
+
+# Default chmod arguments
+# -c: Report when a change to a file's mode is made
+# --preserve-root: Fail to operate recursively on '/'
+alias chmod="chmod -c --preserve-root"
+
+# Default chown arguments
+# -c: Report when a change to a file's mode is made
+# --preserve-root: Fail to operate recursively on '/'
+alias chown="chown -c --preserve-root"
+
+# Default chgrp arguments
+# -c: Report when a change to a file's mode is made
+# --preserve-root: Fail to operate recursively on '/'
+alias chgrp="chgrp -c --preserve-root"
+
+# Default grep arguments
+# --color=always: Coloured output
+alias grep="grep --color=always"
+
+# Alias deprecated grep cmds
+alias egrep="grep -E"
+alias fgrep="grep -F"
+alias rgrep="grep -r"
+
+# Default diff arguments
+# --brief: Report only when files differ
+# --side-by-side: Output in two columns
+# --left-column: Only show common lines in the left column
+# --color=always: Coloured output
+alias diff="nvim -d"
+
+# Default mv arguments
+# -i: Prompt before overwriting
+# -v: Explain what is being done
+alias mv="mv -i -v"
+
+#
+# QoL Aliases
+#
+
+# Editor
+alias v="$EDITOR"
+
+# Systemd
+alias s="systemctl"
+
+# Interacting with units
+alias ss="s status"
+alias sta="s start"
+alias sto="s stop"
+alias se="s enable"
+alias sen="se --now"
+alias sd="s disable"
+alias sdn="sd --now"
+alias sdr="s daemon-reload"
+alias sr="s restart"
+alias srf="s reset-failed"
+
+# Listing systemd stuff
+alias sla="s list-automounts"
+alias sld="s list-dependencies"
+alias slp="s list-paths"
+alias sls="s list-sockets"
+alias slt="s list-timers"
+alias slu="s list-units"
+alias slservice="slu --type=service"
+alias slsocket="slu --type=socket"
+alias sltimer="slu --type=timer"
+alias slerror="slu --state=error"
+alias slfailed="slu --state=failed"
+alias slloaded="slu --state=loaded"
+alias slactive="slu --state=active"
+alias slm="s list-machines"
+alias slf="s list-unit-files"
+alias slj="s list-jobs"
+
+# Journalctl
+alias j="journalctl"
+alias jb="j -b"
+alias ju="jb -u"
+alias j0="jb -p 0"
+alias jemerg="j0"
+alias j1="jb -p 1"
+alias jalert="j1"
+alias j2="jb -p 2"
+alias jcrit="j2"
+alias j3="jb -p 3"
+alias jerr="j3"
+alias j4="jb -p 4"
+alias jwarning="j4"
+alias j5="jb -p 5"
+alias jnotice="j5"
+alias j6="jb -p 6"
+alias jinfo="j6"
+alias j7="jb -p 7"
+alias jdebug="j7"

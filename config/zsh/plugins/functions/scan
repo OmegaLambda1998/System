@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Initialise and run antivirus scan
+function scan() {
+    if (( $# < 1 )); then
+        echo "Usage: scan <scan directory> [log | /tmp/scan.log]"
+        return 1
+    fi
+
+    local dir="$1"
+    echo "Scanning $dir"
+    
+    local log="${3:-"/tmp/scan.log"}"
+    echo "Logging to $log"
+
+    local files="$(\fd --hidden -t=f --color=never . "$dir")"
+    echo "$files" > "/tmp/scan_files"
+    local num_files="$(echo "$files" | wc -l)"
+    echo "Scanning $num_files files"
+
+    echo "Enabling daemon"
+    systemctl start clamav-daemon.service
+    echo "Beginning scan"
+    SECONDS=0
+    clamdscan --multiscan --fdpass --verbose --file "/tmp/scan_files" | tee "$log" && systemctl stop clamav-daemon.service clamav-daemon.socket
+}

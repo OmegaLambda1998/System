@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Initialise and run benchmark
+function bench() {
+    local benchmark_dir="$HOME/.benchmark"
+
+    if [ ! -d $benchmark_dir ]; then
+        mkdir -p $benchmark_dir
+    fi
+
+    local benchmark_cmd="wget -qO- yabs.sh | bash -s --"
+    local runtime="$(date +"%F_%R")"
+    local out_file="$benchmark_dir/$runtime.json"
+    local flags="-b -r -w $out_file"
+    if [ $# -ge 1 ]; then
+        flags="$@ $flags"
+    fi
+    echo "Running $benchmark_cmd $flags"
+    SECONDS=0
+    eval "$benchmark_cmd $flags"
+    duration=$SECONDS
+    echo "Completed after $((duration / 60)) minutes and $((duration % 60)) seconds."
+    if [ -f "$out_file" ]; then
+        echo "Results:"
+        echo "$(cat $out_file | jq)"
+    fi
+}

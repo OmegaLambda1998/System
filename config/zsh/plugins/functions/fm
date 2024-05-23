@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Start command line file manager
+# Suggestion from https://yazi-rs.github.io/docs/quick-start to cd to whatever dir you left yazi
+function fm() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}

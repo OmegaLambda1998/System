@@ -1,0 +1,27 @@
+#
+### Navigation
+#
+
+# Activate Vi mode
+bindkey -v
+# Switch between modes quickly
+export KEYTIMEOUT=1
+
+# Ctrl + <- and Ctrl + -> move backwards and forward a full word
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+
+#
+### History
+#
+
+# File to save history
+export HISTFILE="$ZDOTDIR/.zhistory"
+# Size of history
+export HISTSIZE=10000
+# Number of elements saved to history
+export SAVEHIST=10000
+# Do not write duplicate events to the history file
+setopt HIST_SAVE_NO_DUPS
+# Assume that the terminal displays combining characters correctly
+setopt COMBINING_CHARS

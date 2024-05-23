@@ -1,0 +1,38 @@
+#!/use/bin/env bash
+
+# Function to robustly check if a command requires root access
+function requires_root() {
+    local cmd="$1"
+    local args=("${@:2}")  # Capture all arguments except the first (command itself)
+
+    # Check if the command is setuid or setgid
+    if [[ -u "$(command -v "$cmd")" || -g "$(command -v "$cmd")" ]]; then
+        echo "Command $cmd requires root access"
+        return 0
+    fi
+
+    # Analyze command behavior based on its name and arguments
+    case "$cmd" in
+        # Add cases for specific commands that you know require root access with certain arguments
+        "some_command")
+            if [[ "${args[@]}" == *"some_argument"* ]]; then
+                echo "Command $cmd requires root access when used with 'some_argument'"
+                return 0
+            fi
+            ;;
+        # Add more cases as needed for other commands
+        *)
+            # For commands not explicitly handled, consult documentation or other sources
+            # to determine if they require root access with certain arguments
+            # Example:
+            # if [[ "$cmd" == "my_command" && "${args[@]}" == *"specific_argument"* ]]; then
+            #     echo "Command $cmd requires root access when used with 'specific_argument'"
+            #     return 0
+            # fi
+            ;;
+    esac
+
+    # If none of the checks indicate that root access is required, return false
+    echo "Command $cmd does not require root access"
+    return 1
+}

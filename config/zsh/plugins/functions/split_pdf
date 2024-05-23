@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+split_pdf() {
+    local pdf_file="$1"
+    local chunk_size="$2"
+    local pdf_length=$(pdfinfo "$pdf_file" | grep "Pages:" | awk '{print $2}')
+
+    echo "PDF length: $pdf_length pages"
+
+    for ((i = 1; i <= pdf_length; i += chunk_size)); do
+        start_page="$i"
+        end_page="$((i + chunk_size - 1))"
+        echo "Splitting pages $start_page to $end_page"
+        pdfseparate -f "$start_page" -l "$end_page" "$pdf_file" "Part-$((i / chunk_size))-%03d.pdf"
+        echo "Uniting split PDFs into Part-$((i / chunk_size)).pdf"
+        pdfunite Part-"$((i / chunk_size))"-*.pdf "Part-$((i / chunk_size)).pdf"
+        echo "Removing temporary split files"
+        rm Part-"$((i / chunk_size))"-*.pdf
+    done
+    echo "PDF splitting complete"
+}
