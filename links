@@ -24,6 +24,32 @@ if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     exit 0
 fi
 
+function lmount {
+    src="$1"
+    if [ ! -d "$src" ]; then
+        echo "$src either cannot be found, or is not a directory"
+        exit 1
+    fi
+
+    mnt="$2"
+    if [ ! -d "$mnt" ]; then
+        echo "$mnt either cannot be found, or is not a directory"
+        exit 1
+    elif [ "$(ls -A $mnt)" ]; then
+        echo "$mnt is not empty"
+        exit 1
+    fi
+
+    # -o reconnect: Automatically reconnect
+    # -o sshfs_sync: Synchronous write
+    # -o sync_readdir: Synchronous readdir
+    # -o follow_symlinks: Treat symlinks as normal files / directories
+    # -o no_check_root: Don't bother checking for dir
+    # -o direct_io: No page cache
+    # -o dir_cache=no: No directory cache
+    sshfs -o reconnect -o sshfs_sync -o sync_readdir -o follow_symlinks -o no_check_root -o direct_io -o dir_cache=no localhost:"$src" "$mnt"
+}
+
 function is_mnt {
     if [ -d "$mnt" ]; then
         echo "$(mountpoint "$1" | grep "is a mountpoint")"
