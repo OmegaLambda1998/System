@@ -6,30 +6,56 @@ declare -A links=(
     ["$ZDOTDIR"]="config/zsh"
 )
 
+function mklink {
+    src="$1"
+    mnt="$2"
+    if [ ! -d "$mnt" ]; then
+        mkdir "$mnt"
+    fi
+    echo "Locally mounting $scr -> $mnt"
+    lmount "$src" "$mnt"
+}
+
 function mklinks {
     for src in "${!links[@]}"; do
         mnt="$script_dir/${links[$src]}"
-        if [ ! -d "$mnt" ]; then
-            mkdir "$mnt"
-        fi
-        echo "Local mounting $scr -> $mnt"
-        lmount "$src" "$mnt"
+        mklink "$src" "$mnt"
     done
+}
+
+function rmlink {
+    mnt="$1"
+    echo "Unmounting $mnt"
+    umount "$mnt"
+    rmdir "$mnt"
 }
 
 function rmlinks {
     for mnt in "${links[@]}"; do
         mnt="$script_dir/$mnt"
-        echo "Unmounting $mnt"
-        umount "$mnt"
-        rmdir "$mnt"
+        rmlink "$mnt"
+    done
+}
+
+function togglelinks {
+    for src in "${!links[@]}"; do
+        local mnt="$script_dir/${links[$src]}"
+        local cmd="mklink $src $mnt"
+        # Check if `mnt` exists
+        if [ -d "$mnt" ]; then
+            # Check if `mnt` is empty
+            if [ "$(ls -A $mnt)" ]; then
+                cmd="rmlink $mnt"
+            fi
+        fi
+        eval "$cmd"
     done
 }
 
 if [ "$1" == "up" ]; then
     mklinks
-fi
-
-if [ "$1" == "down" ]; then
+elif [ "$1" == "down" ]; then
     rmlinks
+else
+    togglelinks
 fi
