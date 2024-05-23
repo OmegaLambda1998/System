@@ -1,0 +1,122 @@
+#!/usr/bin/env bash
+
+script_dir="$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# ["/absolute/path/to/local/directory"]="relative/path/to/system/mount_point"
+declare -A links=(
+    ["$ZDOTDIR"]="config/zsh"
+)
+
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+    echo $'Usage: links [--help | -h] [up | down | toggle] [src] [mnt]'
+    echo $'\tlinks --help | -h: Print this help statement and quit'
+    echo $'\tlinks: mount every unmounted link, unmount every mounted link'
+    echo $'\tlinks up: mount all links'
+    echo $'\tlinks down: unmount all links'
+    echo $'\tlinks toggle: mount every unmounted link, unmount every mounted link'
+    echo $'\tlinks [up | toggle] /absolute/path/to/local/directory relative/path/to/system/mount_point:\n\t\tperform specified action on src -> mnt link'
+    echo $'\tlinks down relative/path/to/system/mount_point: unmount mnt'
+    echo $'\n'"Current links:"
+    for src in "${!links[@]}"; do
+        mnt="$script_dir/${links[$src]}"
+        echo "$src -> $mnt"
+    done
+    exit 0
+fi
+
+function is_mnt {
+    if [ -d "$mnt" ]; then
+        echo "$(mountpoint "$1" | grep "is a mountpoint")"
+    fi
+}
+
+function mklink {
+    src="$1"
+    mnt="$2"
+    if [ ! -d "$src" ]; then
+        echo "$src either not found or not a directory"
+        exit 1
+    fi
+    if [ ! -d "$mnt" ]; then
+        mkdir "$mnt"
+    fi
+    if [ "$(ls -A $mnt)" ]; then
+        echo "$mnt not empty"
+        exit 1
+    fi
+    echo "Locally mounting $src -> $mnt"
+    lmount "$src" "$mnt"
+}
+
+function mklinks {
+    for src in "${!links[@]}"; do
+        mnt="$script_dir/${links[$src]}"
+        mklink "$src" "$mnt"
+    done
+}
+
+function rmlink {
+    mnt="$1"
+    if [ ! -n "$(is_mnt "$mnt")" ]; then
+        echo "$mnt is not a mountpoint"
+        exit 1
+    fi
+    echo "Unmounting $mnt"
+    umount "$mnt"
+    if [ "$(ls -A $mnt)" ]; then
+        echo "$mnt is not empty"
+        exit 1
+    fi
+    echo "Removing $mnt"
+    rmdir "$mnt"
+}
+
+function rmlinks {
+    for mnt in "${links[@]}"; do
+        mnt="$script_dir/$mnt"
+        rmlink "$mnt"
+    done
+}
+
+function togglelink {
+    local src="$1"
+    local mnt="$2"
+    local cmd=""
+    # If `mnt` is a mountpoint, unlink, else link
+    if [ -n "$(is_mnt "$mnt")" ]; then
+        cmd="rmlink $mnt"
+    else
+        cmd="mklink $src $mnt"
+    fi
+    eval "$cmd"
+}
+
+function togglelinks {
+    for src in "${!links[@]}"; do
+        local mnt="$script_dir/${links[$src]}"
+        togglelink "$src" "$mnt"
+    done
+}
+
+if [ "$1" == "up" ]; then
+    if [ -n "$2" ] && [ -n "$3" ]; then
+        mklink "$2" "$3"
+    else
+        mklinks
+    fi
+elif [ "$1" == "down" ]; then
+    if [ -n "$2" ]; then
+        rmlink "$2"
+    else
+        rmlinks
+    fi
+
+elif [ "$1" == "toggle" ]; then
+    if [ -n "$2" ] && [ -n "$3" ]; then
+        togglelink "$2" "$3"
+    else
+        togglelinks
+    fi
+else
+    togglelinks
+fi
