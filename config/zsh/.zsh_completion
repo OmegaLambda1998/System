@@ -21,9 +21,14 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 # force zsh not to show completion menu, which allows fzf-tab to capture the unambiguous prefix
 zstyle ':completion:*' menu no
 
+#
 # fzf previews
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'tree -C $realpath | head -200'
-zstyle ':fzf-tab:complete:ls:*' fzf-preview 'if [ -f $realpath ]; then cat $realpath; else tree -C $realpath; fi | head -200'
+#
+
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'if [ -f $realpath ]; then bat --color always --decorations always --theme gruvbox-dark --style full $realpath; else tree -C -L 3 $realpath; fi'
+#zstyle ':fzf-tab:complete:cd:*' fzf-preview 'tree -C -L 3 $realpath'
+#zstyle ':fzf-tab:complete:ls:*' fzf-preview 'if [ -f $realpath ]; then bat --color always --decorations always --theme gruvbox-dark --style full $realpath; else tree -C -L 3 $realpath; fi'
+#zstyle ':fzf-tab:complete:eza:*' fzf-preview 'if [ -f $realpath ]; then bat --color always --decorations always --theme gruvbox-dark --style full $realpath; else tree -C -L 3 $realpath; fi'
 
 # Show systemd unit status
 zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'

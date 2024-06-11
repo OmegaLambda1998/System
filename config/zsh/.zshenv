@@ -1,12 +1,12 @@
 #
-# WLRoots Environment Variables
+# --- WLRoots Environment Variables ---
 #
 
-export WLR_NO_HARDWARE_CURSORS=1
+# Forces use of vulkan renderer
 export WLR_RENDERER="vulkan"
 
 #
-# Hardware Acceleration Environment Variables
+# --- Hardware Acceleration Environment Variables ---
 #
 
 # VA-API Hardware Acceleration
@@ -19,12 +19,16 @@ export VDPAU_DRIVER="radeonsi"
 export VK_DRIVER_FILES="/usr/share/vulkan/icd.d/radeon_icd.i686.json:/usr/share/vulkan/icd.d/radeon_icd.x86_64.json"
 
 #
-# Wayland Compatibility Environment Variables
+# --- Wayland Compatibility Environment Variables ---
 #
 
-# GDK
+# GTK
 # Use Wayland
 export GDK_BACKEND=wayland
+# Use dark theme
+export GTK_THEME="Adwaita:dark"
+export GTK2_RC_FILES="/usr/share/themes/Adwaita-dark/gtk-2.0/gtkrc"
+
 
 # QT
 # Use Wayland, falling back to X11 if needed
@@ -35,6 +39,8 @@ export QT_WAYLAND_FORCE_DPI=physical
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
 # Automatic scaling based on monitor's pixel density
 export QT_AUTO_SCREEN_SCALE_FACTOR=1
+# Use dark theme
+export QT_STYLE_OVERRIDE=Adwaita-Dark
 
 # SDL2
 # Use Wayland, falling back to X11 if needed
@@ -54,7 +60,7 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 export MOZ_ENABLE_WAYLAND=1
 
 #
-# XDG Environment Variables
+# --- XDG Environment Variables ---
 #
 
 # $DOAS_HOME defined in /etc/zsh/zshenv
@@ -95,13 +101,33 @@ export VIDEOS=$XDG_VIDEOS_DIR
 # Useful user directories
 #
 
+# $LOCAL
 export LOCAL="$DOAS_HOME/.local"
 export LBIN="$LOCAL/bin"
-export LAUNCHERS="$LBIN/launchers"
 
+# $BASE
 export BASE="$DOAS_HOME/User"
-export TESTS="$BASE/Tests"
+export DEV="$BASE/Development"
 export NOTES="$BASE/Notes"
+export PAPERS="$BASE/Papers"
+
+# $DEV
+export PYDEV="$DEV/Python"
+export PYVENV="$PYDEV/.venv"
+export JLDEV="$DEV/Julia"
+export SHDEV="$DEV/Bash"
+export LAUNCHERS="$SHDEV/launchers"
+
+# $PHD
+export PHD="$BASE/Astrophysics/PhD"
+export THESIS="$PHD/Thesis"
+
+# $CONFIG
+export SWAY="$CONFIG/sway"
+
+# $ZDOTDIR
+export ZSH_PLUGINS="$ZDOTDIR/plugins"
+export ZSH_FUNCTIONS="$ZDOTDIR/functions"
 
 #
 # Preferred software

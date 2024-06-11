@@ -1,0 +1,39 @@
+# Autoload all functions in $ZSH_FUNCTIONS
+() {
+    # Path to dir containing all functions
+    # FPATH is already tied to fpath, but this adds
+    # a uniqueness constraint to prevent duplicate entries
+    typeset -TUg +x FPATH=$ZSH_FUNCTIONS:$FPATH fpath
+
+    # Autoload all functions
+    if [[ -d $ZSH_FUNCTIONS ]]; then
+        for file in $ZSH_FUNCTIONS/*; do
+            autoload -Uz $file
+        done
+    else
+        echo "$functions_dir not found!"
+    fi
+}
+
+#
+# Simple functions
+#
+
+# Soft link target ($1) as absolute path to destination ($2)
+function sl {
+    local target="$(realpath $1)"
+    local destination="$2"
+    ln -s $target $destination
+}
+
+# Simple tui calculator
+function = {
+    echo "$@" | bc -l
+}
+alias calc="="
+
+# Pipe output to pager
+function page {
+    $@ | eval "$PAGER"
+}
+alias page="page "

@@ -1,15 +1,33 @@
 #
-### Navigation
+# --- Navigation ---
 #
 
-# Activate Vi mode
-bindkey -v
-# Switch between modes quickly
-export KEYTIMEOUT=1
+# Directory Navigation
+# autocd -> Type dir name to cd
+# chaselinks -> Resikve symlinks when changing dir.
+#   If /foo/bar -> /baz/biz then cd /foo/bar/.. resolves to /baz
+# cdpath -> All subdirs of dirs in cdpath are always available
+setopt autocd
+setopt chaselinks
 
-# Ctrl + <- and Ctrl + -> move backwards and forward a full word
-bindkey "^[[1;5D" backward-word
-bindkey "^[[1;5C" forward-word
+function command_not_found_handler {
+    emulate -L zsh
+    for file in $@; do
+        test -e $file && $EDITOR $file:A
+    done
+}
+#
+# --- Completion ---
+#
+
+#
+# --- Expansion and Globbing ---
+#
+
+# `*` glob expansion includes dotfiles
+setopt dotglob
+
+
 
 #
 ### History
@@ -25,3 +43,16 @@ export SAVEHIST=10000
 setopt HIST_SAVE_NO_DUPS
 # Assume that the terminal displays combining characters correctly
 setopt COMBINING_CHARS
+
+
+
+
+#
+# --- Keybinds ---
+#
+
+# Ctrl + <- and Ctrl + -> move backwards and forward a full word
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+
+

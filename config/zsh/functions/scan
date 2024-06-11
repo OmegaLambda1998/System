@@ -10,7 +10,7 @@ function scan() {
     local dir="$1"
     echo "Scanning $dir"
     
-    local log="${3:-"/tmp/scan.log"}"
+    local log="${2:-"/tmp/scan.log"}"
     echo "Logging to $log"
 
     local files="$(\fd --hidden -t=f --color=never . "$dir")"

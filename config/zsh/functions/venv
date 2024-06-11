@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Create and activate a python venv environment 
+function venv() {
+    local base_dir="${PYVENV:-$HOME/.pyvenv}"
+    if [ ! -d "$base_dir" ]; then
+        mkdir -p "$base_dir"
+    fi
+
+    local name="$(basename "$PWD")"
+    if [ -n "$1" ]; then
+        local name="$1"
+    fi
+    local venv_dir="$base_dir/$name"
+
+    # If the venv doesn't exist yet, create it
+    local activate="$venv_dir/bin/activate"
+    if [ ! -f "$activate" ]; then
+        python -m venv "$venv_dir"
+        echo "Created $name environment"
+    fi
+
+    # Deactivate any active environments
+    local active_venv="$VIRTUAL_ENV"
+    if [ -n "$active_venv" ]; then
+        active_name="$(basename "$active_venv")"
+        deactivate; echo "Deactivated $active_name environment"
+    fi
+
+    # Activate the environment
+    source "$venv_dir/bin/activate"
+    echo "Activated $name environment"
+}

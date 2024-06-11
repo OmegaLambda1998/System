@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+# Remove a python venv environment
+function rmvenv() {
+    local base_dir="${PYVENV:-$HOME/.pyvenv}"
+
+    local name="$(basename "$PWD")"
+    if [ -n "$1" ]; then
+        local name="$1"
+    fi
+    local venv_dir="$base_dir/$name"
+
+    # Test if in correct directory (i.e deleting the correct venv) 
+    local activate="$venv_dir/bin/activate"
+    if [ ! -f "$activate" ]; then
+        echo "Error: $activate does not exist, make sure you are in the right directory!"
+        return 1
+    fi
+
+    # See if the environment to be deleted is active
+    local active_venv="$VIRTUAL_ENV"
+    if [ -n "$active_venv" ]; then
+        if [[ "$venv_dir" == "$active_venv" ]]; then
+            deactivate; echo "Deactivated $name environment"
+        fi
+    fi
+
+    # Remove environment directory
+    rm -r "$venv_dir"
+    echo "Removed $name environment"
+}

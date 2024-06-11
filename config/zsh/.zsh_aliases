@@ -1,32 +1,78 @@
+
+#
+# --- Unix Alternatives ---
+#
+
+# sudo -> doas
+# See /etc/doas.conf for configuration
 # Check for aliases after doas
 alias doas="doas "
 
-# Colored output
-alias ls="ls --color=auto"
+# cat -> bat
+# --color always: Coloured output
+# --decorations always: Decorated output
+# --theme _: See bat --list-themes
+# --style full: Add all stylings available
+alias c="bat --color always --decorations always --theme gruvbox-dark --style full"
 
-# Default ls arguments
-# -A: list all except . and ..
-# --group-directories-first: self explanatory 
-# -h: Print sizes in human readable format
-# -H: Follow symlinks
-# -l: Long listing format
-# -s: Print file size
-alias l="ls -A --group-directories-first -h -H -l -s"
+# ls -> eza
+# Display Options
+# --oneline: One line per entry
+# --classify=always: Always display file-kind indicators
+#   * for executables; / for directories; @ for symbolic links; | for FIFOs; = for sockets; > for doors
+# --long: Display extended details & attributes
+# --colour=always: Coloured output (and proper spelling!!)
+# --icons=always: Display icons
+# Filtering and Sorting Options
+# --all: Display hidden files
+# --group-directories-first: Display dirs before files
+# Long View Options
+# --smart-group: Display group if it differs from owner
+# --header: Display a header above each column
+# --octal-permissions: Display permissions in octal format
+# --no-filesize: Supress file size field
+# --no-time: Supress time field
+# --git: Display git status
+#   - for not modified; M for modified; N for new; D for deleted; R for renamed; T for type change; I for ignored; U for conflicted
+# --git-repos: If a directory is a git repo, list the branch and status
+#   | for clean; + for dirty; ~ for unknown
 
-# Default rg (quicker grep) arguments
+# l => ls as quickly as posisble
+alias l="eza --classify=always --colour=always --icons=always --all --group-directories-first"
+
+# ll -> ls with more information
+alias ll="eza --oneline --classify=always --long --colour=always --icons=always --all --group-directories-first --smart-group --header --octal-permissions --git --git-repos"
+
+# +r => recursive tree
+alias lr="l --tree"
+alias llr="ll --tree"
+
+# +size => calculate and sort by size
+alias lsize="l --total-size --sort=size"
+alias llsize="ll --total-size --sort=size"
+
+# du -> dust
+# --apparent-size: Show file length instead of blocks
+# --ignore-all-in-file=$CONFIG/dust/.ignore: File containing files to ignore
+alias dust="dust --apparent-size --ignore-all-in-file=$CONFIG/dust/.ignore"
+alias dut="dust" # du total
+alias dud="dust --only-dir" # du directories
+alias duf="dust --only-file" # du files
+
+# grep -> rg
 # -S: Smart case - only case sensitive is uppercase in pattern
 # -L: Follow symlinks
 # -.: Search hidden files and directories
 # --one-file-system: Do not cross file system boundaries when searching
 alias rg="rg -S -L --one-file-system -. --ignore-file=$CONFIG/rg/ignore"
 
-# Default fd arguments
+# find -> fd
 # -H: Include hidden files
 # -l: Long listing format (like ls -l)
 # --one-file-system: Do not cross file system boundaries when searching
 alias fd="fd -H -l --one-file-system"
 
-# Default rm arguments
+# rm -> safe-rm
 # safe-rm is loaded in $PATH before rm, so `which rm` -> `/usr/lib/safe-rm/rm`
 # safe-rm accepts the same args as rm
 # -I: Prompt once before removing more than 3 files, or recursively
@@ -72,12 +118,26 @@ alias diff="nvim -d"
 # -v: Explain what is being done
 alias mv="mv -i -v"
 
+# Default cp arguments
+# -i: Prompt before overwriting
+# -v: Explain what is being done
+# --reflink=auto: Use CoW where possible, and standard copy otherwise
+alias cp="cp -i -v --reflink=auto"
+
+# Default ln arguments
+# -i: Prompt whether to remove destinations
+# -v: Explain what is being done
+alias ln="ln -i -v"
+
 #
 # QoL Aliases
 #
 
 # Editor
 alias v="$EDITOR"
+
+# Path line by line
+alias path="echo $PATH | tr : '\n'"
 
 # Systemd
 alias s="systemctl"
@@ -132,3 +192,10 @@ alias j6="jb -p 6"
 alias jinfo="j6"
 alias j7="jb -p 7"
 alias jdebug="j7"
+
+#
+# One-liner "functions"
+#
+
+# Print all windows currently using xwayland
+alias xapps="swaymsg -t get_tree | jq -r '.. | select(.shell? == \"xwayland\") | \"\(.window_properties.instance // \"Unknown\"):\n  shell: \(.shell // \"Unknown\")\n  pid: \(.pid // \"Unknown\")\"'"

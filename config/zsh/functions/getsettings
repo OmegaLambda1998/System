@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+function get_description {
+    local schema="$1"
+    local key="$2"
+    gsettings describe "$schema" "$key" | while read line; do echo "      ${line}"; done
+}
+
+function get_range {
+    local schema="$1"
+    local key="$2"
+    gsettings range "$schema" "$key" | while read line; do echo "      ${line}"; done
+}
+
+function get_current {
+    local schema="$1"
+    local key="$2"
+    gsettings get "$schema" "$key" | while read line; do echo "      ${line}"; done
+}
+
+function print_settings {
+    local schema="$1"
+    local key="$2"
+    echo "    $schema :: $key :: Description:"
+    get_description "$schema" "$key"
+    echo "    $schema :: $key :: Options:"
+    get_range "$schema" "$key"
+    echo "    $schema :: $key :: Current:"
+    get_current "$schema" "$key"
+}
+
+
+function getsettings {
+    for schema in $(gsettings list-schemas); do
+        echo "Schema: $schema"
+        for key in $(gsettings list-keys "$schema"); do
+            echo "  Key: $key"
+            print_settings "$schema" "$key"
+            echo ""
+        done
+        echo $'\n------------------\n'
+    done
+}
+
+getsettings "$@" | eval "$PAGER"
